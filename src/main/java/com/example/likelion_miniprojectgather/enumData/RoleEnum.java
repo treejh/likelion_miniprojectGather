@@ -1,4 +1,7 @@
 package com.example.likelion_miniprojectgather.enumData;
 
-public class f {
+public enum RoleEnum {
+
+    ADMIN,
+    USER,
 }

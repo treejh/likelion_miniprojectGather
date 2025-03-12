@@ -1,4 +1,7 @@
 package com.example.likelion_miniprojectgather.repository;
 
-public class RoleRepository {
+import com.example.likelion_miniprojectgather.domain.Role;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RoleRepository extends JpaRepository<Role,Long> {
 }
