@@ -13,8 +13,10 @@ import jakarta.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -67,9 +69,10 @@ public class MeetingService {
         return meetingListDto;
     }
 
+    @Transactional
     public MeetingResponseDto updateMeeting(Long meetingId,MeetingRequestDto meetingRequestDto){
         Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() ->  new NullPointerException("모임이 존재 하지 않습니다"+ meetingId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임이 존재하지 않습니다."));
 
         meeting.setDescription(meetingRequestDto.getDescription());
         meeting.setName(meetingRequestDto.getName());
@@ -84,6 +87,18 @@ public class MeetingService {
                 .build();
     }
 
+    @Transactional
+    public void deleteMeeting(Long meetingId) {
+        Long userId = tokenService.getIdFromToken();
+        User user = userService.findUserById(userId);
+        Meeting meeting = meetingRepository.findById(meetingId).
+                orElseThrow(()->new NullPointerException("모임이 존재하지 않습니다."));
 
+        if(meeting.getUser().equals(user)){
+            meetingRepository.delete(meeting);
+        }else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임을 삭제할 권한이 없습니다.");
+        }
+    }
 
 }

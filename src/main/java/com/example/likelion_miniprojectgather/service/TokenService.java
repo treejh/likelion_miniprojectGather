@@ -33,4 +33,15 @@ public class TokenService {
         return jwtTokenizer.getEmailFromToken(token);
 
     }
+
+    public Long getIdFromToken(){
+        String token = getTokenFromRequest();
+
+        if (token == null) {
+            throw new IllegalArgumentException("Token is missing");  // 토큰이 없으면 예외 처리
+        }
+
+        return jwtTokenizer.getUserIdFromToken(token);
+
+    }
 }

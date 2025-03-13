@@ -6,6 +6,7 @@ import com.example.likelion_miniprojectgather.domain.User;
 import com.example.likelion_miniprojectgather.dto.request.UserRequestDto;
 import com.example.likelion_miniprojectgather.jwt.token.JwtTokenizer;
 import com.example.likelion_miniprojectgather.repository.UserRepository;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,10 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void loginUser(UserRequestDto userRequestDto){
+    public User findUserById(Long id){
+       User user=  userRepository.findById(id)
+                .orElseThrow(()->new NullPointerException("존재하지 않는 유저 입니다."));
+        return user;
 
     }
 

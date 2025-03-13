@@ -132,7 +132,25 @@ public class JwtTokenizer {
         }
 
     }
+    public Long getUserIdFromToken(String token){
+        if(token == null || token.isBlank()){
+            throw new IllegalArgumentException("JWT 토큰이 없습니다.");
+        }
 
+
+        Claims claims = parseToken(token, accessSecret);
+
+        if(claims == null){
+            throw new IllegalArgumentException("유효하지 않은 형식입니다.");
+        }
+        Object userId = claims.get("userId");
+        if(userId instanceof Number){
+            return ((Number)userId).longValue();
+        }else{
+            throw new IllegalArgumentException("JWT토큰에서 userId를 찾을 수 없습니다.");
+        }
+
+    }
     //받은 토큰에서 데이터 받는 메서드 ->여기서 유효한 토큰인지 같이 확인한다.
     public Claims parseToken(String token, byte[] secretKey){
         return Jwts.parserBuilder()
