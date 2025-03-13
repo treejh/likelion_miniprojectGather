@@ -1,4 +1,4 @@
-package com.example.likelion_miniprojectgather.dto.request;
+package com.example.likelion_miniprojectgather.dto.response.meeting;
 
 
 import lombok.AllArgsConstructor;
@@ -7,14 +7,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MeetingRequestDto {
+@Getter
+@Setter
+public class MeetingResponseDto {
+
     private String name;
     private String description;
     private Long maxParticipants;
 
 }
+
+

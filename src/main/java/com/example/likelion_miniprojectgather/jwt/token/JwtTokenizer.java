@@ -2,6 +2,7 @@ package com.example.likelion_miniprojectgather.jwt.token;
 
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
@@ -66,35 +67,7 @@ public class JwtTokenizer {
     }
 
 
-    public Long getUserIdFromToken(String token){
-        if(token == null || token.isBlank()){
-            throw new IllegalArgumentException("JWT 토큰이 없습니다.");
-        }
 
-        if(!token.startsWith("Bearer ")){
-            throw new IllegalArgumentException("유효하지 않은 형식입니다.");
-        }
-        //Bearer로 시작해서 그거 없애주려고
-        String [] tokenArr = token.split(" ");
-
-        token = tokenArr[1];
-        Claims claims = parseToken(token, accessSecret);
-
-        if(claims == null){
-            throw new IllegalArgumentException("유효하지 않은 형식입니다.");
-        }
-
-        Object userId = claims.get("userId");
-
-        //return Long.valueOf((Integer)claims.get("id"));
-
-        if(userId instanceof Number){
-            return ((Number)userId).longValue();
-        }else{
-            throw new IllegalArgumentException("JWT토큰에서 userId를 찾을 수 없습니다.");
-        }
-
-    }
 
     public Claims parseAccessToken(String accessToken){
         return parseToken(accessToken, accessSecret);
@@ -108,6 +81,7 @@ public class JwtTokenizer {
         if(token == null || token.isBlank()){
             throw new IllegalArgumentException("JWT 토큰이 없습니다.");
         }
+        System.out.println("나 !!!!여기 " + token);
 
         if(!token.startsWith("Bearer ")){
             throw new IllegalArgumentException("유효하지 않은 형식입니다.");
@@ -134,6 +108,31 @@ public class JwtTokenizer {
 
     }
 
+    public String getEmailFromToken(String token){
+        if(token == null || token.isBlank()){
+            throw new IllegalArgumentException("JWT 토큰이 없습니다.");
+        }
+
+        //Bearer로 시작해서 그거 없애주려고
+
+        Claims claims = parseToken(token, accessSecret);
+
+        if(claims == null){
+            throw new IllegalArgumentException("유효하지 않은 형식입니다.");
+        }
+
+        Object email = claims.get("email");
+
+        //return Long.valueOf((Integer)claims.get("id"));
+
+        if(email instanceof String){
+            return ((String)email);
+        }else{
+            throw new IllegalArgumentException("JWT토큰에서 email를 찾을 수 없습니다.");
+        }
+
+    }
+
     //받은 토큰에서 데이터 받는 메서드 ->여기서 유효한 토큰인지 같이 확인한다.
     public Claims parseToken(String token, byte[] secretKey){
         return Jwts.parserBuilder()
@@ -142,6 +141,8 @@ public class JwtTokenizer {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+
 
 
     // JWT 토큰을 서명(Signing)할 때 사용할 키를 생성하는 역할

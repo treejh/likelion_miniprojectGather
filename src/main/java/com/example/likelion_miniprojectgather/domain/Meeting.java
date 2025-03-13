@@ -1,6 +1,7 @@
 package com.example.likelion_miniprojectgather.domain;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -47,12 +48,7 @@ public class Meeting {
     @JoinColumn(name = "create_user_id")
     private User user;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_meeting",
-            joinColumns  = @JoinColumn(name="meeting_id"),
-            inverseJoinColumns = @JoinColumn(name="user_id")
-    )
-    List<User> userList = new ArrayList<>();
+    @OneToMany(mappedBy = "meeting",cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    private List<UserMeeting> userList = new ArrayList<>();
 
 }

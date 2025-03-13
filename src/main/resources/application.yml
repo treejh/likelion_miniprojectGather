@@ -22,7 +22,7 @@ server:
   error:
     whitelabel:
       enabled: false
-  #port: 8099
+  port: 8099
 
 
 jwt:
