@@ -7,6 +7,7 @@ import com.example.likelion_miniprojectgather.domain.UserMeeting;
 import com.example.likelion_miniprojectgather.dto.request.MeetingRequestDto;
 import com.example.likelion_miniprojectgather.dto.response.meeting.MeetingListResponseDto;
 import com.example.likelion_miniprojectgather.dto.response.meeting.MeetingResponseDto;
+import com.example.likelion_miniprojectgather.dto.response.user.UserJoinResponseDto;
 import com.example.likelion_miniprojectgather.repository.MeetingRepository;
 import com.example.likelion_miniprojectgather.repository.UserMeetingRepository;
 import jakarta.validation.constraints.Null;
@@ -30,17 +31,18 @@ public class MeetingService {
 
     @Transactional
     public MeetingResponseDto createMeeting(MeetingRequestDto meetingRequestDto){
+        User createUser = userService.findByUserEmail(tokenService.getEmailFromToken());
+
         Meeting meeting = Meeting.builder()
                 .name(meetingRequestDto.getName())
                 .description(meetingRequestDto.getDescription())
                 .maxParticipants(meetingRequestDto.getMaxParticipants())
+                .user(createUser)
                 .build();
-        User user = userService.findByUserEmail(tokenService.getEmailFromToken());
 
-        meeting.setUser(user);
 
         meetingRepository.save(meeting);
-        userMeetingRepository.save(new UserMeeting(user,meeting));
+        userMeetingRepository.save(new UserMeeting(createUser,meeting));
 
         return MeetingResponseDto.builder()
                 .name(meeting.getName())
@@ -74,6 +76,7 @@ public class MeetingService {
     public MeetingResponseDto updateMeeting(Long meetingId,MeetingRequestDto meetingRequestDto){
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임이 존재하지 않습니다."));
+
 
         meeting.setDescription(meetingRequestDto.getDescription());
         meeting.setName(meetingRequestDto.getName());
@@ -111,21 +114,45 @@ public class MeetingService {
         //현재 로그인한 유저 가지고 오기
         User currentUser = userService.findUserById(tokenService.getIdFromToken());
 
-        //joinUsers에 참여한 유저 List 가지고오기
+        //meeting에 참여한 유저 List 가지고오기
         List<User> joinUsers = userMeetingRepository.findUserByMeetingId(meetingId).get();
 
-        //만약 이미 참여한 유저라면 xx 다시 참여 안해도 됨
-        for (User user : joinUsers) {
-            if (user.equals(currentUser)){
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이미 모임에 참여한 유저입니다.");
-            }
+        //이미 참여한 유저인지 확인하는 메서드
+        if(UserAlreadyJoin(currentUser,joinUsers)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이미 모임에 참여한 유저입니다.");
         }
 
-        UserMeeting userMeeting = UserMeeting.builder()
+        userMeetingRepository.save(UserMeeting.builder()
                 .user(currentUser)
                 .meeting(meeting)
-                .build();
-
-        userMeetingRepository.save(userMeeting);
+                .build());
     }
+
+    //만약 이미 참여한 유저라면 xx 다시 참여 안해도 됨
+    public boolean UserAlreadyJoin(User currentUser,List<User> joinUsers){
+        return joinUsers.contains(currentUser);
+    }
+
+    @Transactional
+    public List<UserJoinResponseDto> getUsersJoin(Long meetingId){
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임이 존재하지 않습니다. "));
+        List<UserJoinResponseDto> userList = new ArrayList<>();
+        //고민
+        //meeting에 있는 oneToMany에 있는 getUserList를 사용하는 것이 맞는가 -> getUsersJoin
+        //아니면 userMeetingDatabase에서 데이터를 받아오는게 맞는가 -> getUsersJoin
+        List<UserMeeting> userMeetings = meeting.getUserList();
+
+
+        for(UserMeeting data : userMeetings){
+            userList.add(UserJoinResponseDto.builder()
+                    .email(data.getUser().getEmail())
+                    .userId(data.getUser().getId())
+                    .build());
+        }
+
+        return userList;
+
+    }
+
 }

@@ -1,9 +1,11 @@
 package com.example.likelion_miniprojectgather.controller;
 
 
+import com.example.likelion_miniprojectgather.domain.User;
 import com.example.likelion_miniprojectgather.dto.request.MeetingRequestDto;
 import com.example.likelion_miniprojectgather.dto.response.meeting.MeetingListResponseDto;
 import com.example.likelion_miniprojectgather.dto.response.meeting.MeetingResponseDto;
+import com.example.likelion_miniprojectgather.dto.response.user.UserJoinResponseDto;
 import com.example.likelion_miniprojectgather.service.MeetingService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -60,8 +62,8 @@ public class MeetingController {
     }
 
     @GetMapping("/{meetingId}/participants")
-    public ResponseEntity getParticipantsList(@PathVariable("meetingId")Long meetingId){
-
+    public ResponseEntity<List<UserJoinResponseDto>> getParticipantsList(@PathVariable("meetingId")Long meetingId){
+        return ResponseEntity.ok(meetingService.getUsersJoin(meetingId));
 
     }
 

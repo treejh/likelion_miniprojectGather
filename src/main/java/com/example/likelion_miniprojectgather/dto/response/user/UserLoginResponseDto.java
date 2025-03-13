@@ -1,4 +1,4 @@
-package com.example.likelion_miniprojectgather.dto.response;
+package com.example.likelion_miniprojectgather.dto.response.user;
 
 
 import lombok.AllArgsConstructor;

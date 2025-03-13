@@ -1,8 +1,5 @@
 package com.example.likelion_miniprojectgather.domain;
 
-
-import com.example.likelion_miniprojectgather.enumData.StatusEnum;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

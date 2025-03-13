@@ -49,7 +49,7 @@ public class Schedule {
     @JoinColumn(name = "meeting_id")
     private Meeting meeting;
 
-    @OneToMany(mappedBy = "schedule",cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "schedule",cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
     private List<UserSchedule> scheduleList = new ArrayList<>();
 
 }
