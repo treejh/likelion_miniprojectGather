@@ -15,9 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceConfigurationError;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -68,5 +70,25 @@ public class ScheduleService {
 
         return responseDto;
 
+    }
+
+    @Transactional
+    public void joinSchedule(Long meetingId,Long scheduleId){
+        User currentuser = userService.findUserById(tokenService.getIdFromToken());
+        Meeting currentMeeting = meetingService.findByMeetingId(meetingId);
+        Schedule currentSchedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
+
+        if(!currentSchedule.getMeeting().equals(currentMeeting)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 존재하는 스케줄이 아닙니다. ");
+        }
+
+        userScheduleRepository.save(
+                UserSchedule.builder()
+                        .user(currentuser)
+                        .schedule(currentSchedule)
+                        .status(StatusEnum.ATTENDING)
+                        .build()
+        );
     }
 }

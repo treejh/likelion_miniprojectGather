@@ -7,6 +7,7 @@ import com.example.likelion_miniprojectgather.service.ScheduleService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,13 @@ public class ScheduleController {
     public ResponseEntity<List<ScheduleResponseDto>> getSchedules(@PathVariable("meetingId") Long meetingId){
 
         return ResponseEntity.ok(scheduleService.getScheduleList(meetingId));
+    }
+
+    @PostMapping("/schedules/{scheduleId}/join")
+    public ResponseEntity joinSchedule(@PathVariable("meetingId")Long meetingId,
+    @PathVariable("scheduleId")Long scheduleId){
+        scheduleService.joinSchedule(meetingId, scheduleId);
+        return ResponseEntity.ok().build();
     }
 
 
