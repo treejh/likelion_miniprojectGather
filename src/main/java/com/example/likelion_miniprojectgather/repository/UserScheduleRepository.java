@@ -13,5 +13,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserScheduleRepository extends JpaRepository<UserSchedule,Long> {
-
+    //scheduleId를 통해서 UserSchedule에 속한 일정들을 가지고 온다.
+    @Query("SELECT um FROM UserSchedule um WHERE um.schedule.id = :scheduleId and um.user.id=:userId")
+    Optional<UserSchedule> findByScheduleIdAndUserId(@Param("scheduleId") Long scheduleId,@Param("userId") Long userId);
 }

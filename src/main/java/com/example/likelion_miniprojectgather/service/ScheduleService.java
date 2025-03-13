@@ -91,4 +91,29 @@ public class ScheduleService {
                         .build()
         );
     }
+    @Transactional
+    public void deleteLeaveSchedule(Long meetingId, Long scheduleId){
+        UserSchedule userSchedule = userScheduleRepository.findByScheduleIdAndUserId(scheduleId,tokenService.getIdFromToken())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
+
+        if(!userSchedule.getSchedule().equals(meetingService.findByMeetingId(meetingId))){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 존재하는 스케줄이 아닙니다. ");
+        }
+
+        userScheduleRepository.delete(userSchedule);
+
+    }
+
+    @Transactional
+    public void notAttendingSchedule(Long meetingId, Long scheduleId){
+        UserSchedule userSchedule = userScheduleRepository.findByScheduleIdAndUserId(scheduleId,tokenService.getIdFromToken())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
+
+        //meeitng이 다르면 해당 미팅에 속한 스케줄이 아니라는 뜻이다.
+        if(!userSchedule.getSchedule().equals(meetingService.findByMeetingId(meetingId))){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 존재하는 스케줄이 아닙니다. ");
+        }
+
+       userSchedule.setStatus(StatusEnum.NOT_ATTENDING);
+    }
 }
