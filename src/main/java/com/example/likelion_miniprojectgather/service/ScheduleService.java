@@ -4,14 +4,17 @@ package com.example.likelion_miniprojectgather.service;
 import com.example.likelion_miniprojectgather.domain.Meeting;
 import com.example.likelion_miniprojectgather.domain.Schedule;
 import com.example.likelion_miniprojectgather.domain.User;
+import com.example.likelion_miniprojectgather.domain.UserMeeting;
 import com.example.likelion_miniprojectgather.domain.UserSchedule;
 import com.example.likelion_miniprojectgather.dto.request.ScheduleRequestDto;
 import com.example.likelion_miniprojectgather.dto.response.meeting.MeetingListResponseDto;
+import com.example.likelion_miniprojectgather.dto.response.schedule.ScheduleAttendDto;
 import com.example.likelion_miniprojectgather.dto.response.schedule.ScheduleResponseDto;
 import com.example.likelion_miniprojectgather.enumData.StatusEnum;
 import com.example.likelion_miniprojectgather.repository.ScheduleRepository;
 import com.example.likelion_miniprojectgather.repository.UserScheduleRepository;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ServiceConfigurationError;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +79,13 @@ public class ScheduleService {
     public void joinSchedule(Long meetingId,Long scheduleId){
         User currentuser = userService.findUserById(tokenService.getIdFromToken());
         Meeting currentMeeting = meetingService.findByMeetingId(meetingId);
+
+        //미팅에 참여한 유저를 가지고 온다.
+        List<UserMeeting> valid = currentuser.getMeetingList();
+        for(UserMeeting userMeeting: valid){
+            userMeeting.get
+        }
+
         Schedule currentSchedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
 
@@ -96,7 +106,7 @@ public class ScheduleService {
         UserSchedule userSchedule = userScheduleRepository.findByScheduleIdAndUserId(scheduleId,tokenService.getIdFromToken())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
 
-        if(!userSchedule.getSchedule().equals(meetingService.findByMeetingId(meetingId))){
+        if(!userSchedule.getSchedule().getMeeting().equals(meetingService.findByMeetingId(meetingId))){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 존재하는 스케줄이 아닙니다. ");
         }
 
@@ -110,10 +120,43 @@ public class ScheduleService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
 
         //meeitng이 다르면 해당 미팅에 속한 스케줄이 아니라는 뜻이다.
-        if(!userSchedule.getSchedule().equals(meetingService.findByMeetingId(meetingId))){
+        if(!userSchedule.getSchedule().getMeeting().equals(meetingService.findByMeetingId(meetingId))){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 존재하는 스케줄이 아닙니다. ");
         }
 
        userSchedule.setStatus(StatusEnum.NOT_ATTENDING);
     }
+
+    @Transactional
+    public List<ScheduleAttendDto> getAttendList(Long meetingId, Long scheduleId){
+        Schedule currentSchedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
+
+        //meeitng이 다르면 해당 미팅에 속한 스케줄이 아니라는 뜻이다.
+        if(!currentSchedule.getMeeting().equals(meetingService.findByMeetingId(meetingId))){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 존재하는 스케줄이 아닙니다. ");
+        }
+        List<ScheduleAttendDto> scheduleAttendDtoList = new ArrayList<>();
+
+        List<User> userList = userScheduleRepository.findByScheduleIdAndStatus(scheduleId,StatusEnum.ATTENDING)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄에 유저가 존재하지 않습니다.  "));
+
+        //.orElse(Collections.emptyList());
+
+
+        for(User user : userList){
+            scheduleAttendDtoList.add(
+                    ScheduleAttendDto.builder()
+                    .id(user.getId())
+                    .email(user.getEmail())
+                    .build());
+
+        }
+
+        return scheduleAttendDtoList;
+
+    }
+
+
+
 }

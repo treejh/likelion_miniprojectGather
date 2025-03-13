@@ -62,4 +62,13 @@ public class ScheduleController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{scheduleId}/participants")
+    public ResponseEntity getSchedulesUserList(@PathVariable("meetingId")Long meetingId,
+                                               @PathVariable("scheduleId")Long scheduleId){
+
+        return ResponseEntity.ok(scheduleService.getAttendList(meetingId,scheduleId));
+    }
+
+
+
 }
