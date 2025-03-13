@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,4 +102,30 @@ public class MeetingService {
         }
     }
 
+    @Transactional
+    public void joinMeeting(Long meetingId) {
+        //존재하는 모임인지 확인
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임이 존재하지 않습니다. "));
+
+        //현재 로그인한 유저 가지고 오기
+        User currentUser = userService.findUserById(tokenService.getIdFromToken());
+
+        //joinUsers에 참여한 유저 List 가지고오기
+        List<User> joinUsers = userMeetingRepository.findUserByMeetingId(meetingId).get();
+
+        //만약 이미 참여한 유저라면 xx 다시 참여 안해도 됨
+        for (User user : joinUsers) {
+            if (user.equals(currentUser)){
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이미 모임에 참여한 유저입니다.");
+            }
+        }
+
+        UserMeeting userMeeting = UserMeeting.builder()
+                .user(currentUser)
+                .meeting(meeting)
+                .build();
+
+        userMeetingRepository.save(userMeeting);
+    }
 }

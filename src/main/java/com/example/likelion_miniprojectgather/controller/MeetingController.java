@@ -53,6 +53,18 @@ public class MeetingController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{meetingId}/join")
+    public ResponseEntity joinMeeting(@PathVariable("meetingId") Long meetingId){
+        meetingService.joinMeeting(meetingId);
+        return  ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{meetingId}/participants")
+    public ResponseEntity getParticipantsList(@PathVariable("meetingId")Long meetingId){
+
+
+    }
+
 
 
 
