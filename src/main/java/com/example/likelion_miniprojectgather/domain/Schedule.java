@@ -1,6 +1,7 @@
 package com.example.likelion_miniprojectgather.domain;
 
 
+import com.example.likelion_miniprojectgather.enumData.StatusEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +22,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "schedules")
@@ -34,12 +37,15 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String title;
 
+    @Column(nullable = false)
     private LocalDate date;
 
+    @Column(nullable = false)
     private LocalTime time;
+
 
     @Column(nullable = false)
     private String location;
@@ -48,6 +54,11 @@ public class Schedule {
     @ManyToOne
     @JoinColumn(name = "meeting_id")
     private Meeting meeting;
+
+    @ManyToOne
+    @JoinColumn(name="create_user_id")
+    private User user;
+
 
     @OneToMany(mappedBy = "schedule",cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
     private List<UserSchedule> scheduleList = new ArrayList<>();

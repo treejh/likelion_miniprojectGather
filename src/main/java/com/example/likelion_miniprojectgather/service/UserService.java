@@ -34,11 +34,8 @@ public class UserService {
     }
 
     public User findByUserEmail(String email){
-        User user = userRepository.findByEmail(email);
-
-        if(user==null){
-            throw new NullPointerException("email이 존재하지 않습니다");
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new NullPointerException("존재하지 않는 유저 입니다."));;
 
         return user;
     }
