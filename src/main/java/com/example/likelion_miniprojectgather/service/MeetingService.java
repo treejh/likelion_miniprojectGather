@@ -155,4 +155,10 @@ public class MeetingService {
 
     }
 
+    @Transactional
+    public Meeting findByMeetingId(Long meetingId){
+        return meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임이 존재하지 않습니다. "));
+    }
+
 }

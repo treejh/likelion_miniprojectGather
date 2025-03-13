@@ -5,6 +5,8 @@ import com.example.likelion_miniprojectgather.enumData.StatusEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,6 +45,7 @@ public class UserSchedule {
     @JoinColumn(name="schedule_id")
     private Schedule schedule;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="status")
     private StatusEnum status;
 
