@@ -67,13 +67,13 @@ public class MeetingService {
         return meetingListDto;
     }
 
-    public MeetingResponseDto updateMeeting(Long meetingId,MeetingResponseDto meetingResponseDto){
+    public MeetingResponseDto updateMeeting(Long meetingId,MeetingRequestDto meetingRequestDto){
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() ->  new NullPointerException("모임이 존재 하지 않습니다"+ meetingId));
 
-        meeting.setDescription(meetingResponseDto.getDescription());
-        meeting.setName(meetingResponseDto.getName());
-        meeting.setMaxParticipants(meetingResponseDto.getMaxParticipants());
+        meeting.setDescription(meetingRequestDto.getDescription());
+        meeting.setName(meetingRequestDto.getName());
+        meeting.setMaxParticipants(meetingRequestDto.getMaxParticipants());
 
         meetingRepository.save(meeting);
 

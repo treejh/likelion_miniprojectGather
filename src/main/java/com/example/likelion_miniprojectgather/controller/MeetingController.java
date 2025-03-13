@@ -10,7 +10,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +35,14 @@ public class MeetingController {
     public ResponseEntity<List<MeetingListResponseDto>> getMeetings(){
         List<MeetingListResponseDto> meetingListResponseDto =meetingService.getMeetingList();
         return ResponseEntity.ok(meetingListResponseDto);
+    }
+
+    @PutMapping("/{meetingId}")
+    public ResponseEntity<MeetingResponseDto> updateMeeting(
+            @PathVariable("meetingId") Long meetingId,
+            @Valid @RequestBody MeetingRequestDto meetingRequestDto){
+        MeetingResponseDto meetingResponseDto = meetingService.updateMeeting(meetingId,meetingRequestDto);
+        return ResponseEntity.ok(meetingResponseDto);
     }
 
 
