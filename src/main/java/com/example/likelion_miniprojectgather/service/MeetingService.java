@@ -161,4 +161,22 @@ public class MeetingService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임이 존재하지 않습니다. "));
     }
 
+    @Transactional
+    public void leaveMeeting(Long meetingId){
+        User currentUser = userService.findUserById(tokenService.getIdFromToken());
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임이 존재하지 않습니다. "));
+
+        UserMeeting userMeeting = userMeetingRepository.findByMeetingIdAndUserID(currentUser.getId(),meeting.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 참여한 유저가 아닙니다.  "));
+
+        userMeetingRepository.delete(userMeeting);
+
+        //만약 현재 미팅에 사람이 없으면 미팅도 같이 삭제된다.
+        if(meeting.getUserList().isEmpty()){
+         meetingRepository.delete(meeting);
+        }
+
+    }
+
 }

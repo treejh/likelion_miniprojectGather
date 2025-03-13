@@ -17,5 +17,9 @@ public interface UserMeetingRepository extends JpaRepository<UserMeeting,Long> {
     //meetingId를 통해서 meeting에 속한 유저들을 가지고 온다.
     @Query("SELECT um.user FROM UserMeeting um WHERE um.meeting.id = :meetingId")
     Optional<List<User>> findUserByMeetingId(@Param("meetingId") Long meetingId);
+
+    //meetingId, UserId를 통해서 UserMeeting를 가지고 온다.
+    @Query("SELECT um FROM UserMeeting um WHERE um.meeting.id = :meetingId and um.user.id=:userId")
+    Optional<UserMeeting> findByMeetingIdAndUserID(@Param("meetingId") Long meetingId,@Param("userId") Long userId);
 }
 

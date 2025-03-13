@@ -68,6 +68,16 @@ public class MeetingController {
     }
 
 
+    //사용자가 미팅에서 나가고, 미팅의 이용자 수가 0이면 미팅이 삭제된다.
+    @DeleteMapping("/{meetingId}/participants")
+    public ResponseEntity leaveMeeting(@PathVariable("meetingId")Long meetingId){
+
+        meetingService.leaveMeeting(meetingId);
+        return ResponseEntity.ok().build();
+
+    }
+
+
 
 
 
