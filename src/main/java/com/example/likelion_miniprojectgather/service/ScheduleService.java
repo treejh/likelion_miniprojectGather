@@ -39,6 +39,12 @@ public class ScheduleService {
     public void createSchedule(Long meetingId , ScheduleRequestDto scheduleRequestDto){
         User currentuser = userService.findUserById(tokenService.getIdFromToken());
         Meeting currentMeeting = meetingService.findByMeetingId(meetingId);
+
+        //미팅에 참여중인 유저가 맞는지 확인
+        if(validJoinUser(currentuser, currentMeeting)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 참여중인 유저가 아닙니다. ");
+        }
+
         Schedule schedule = scheduleRepository.save(Schedule.builder()
                 .user(currentuser)
                         .meeting(currentMeeting)
@@ -47,6 +53,7 @@ public class ScheduleService {
                 .title(scheduleRequestDto.getTitle())
                 .location(scheduleRequestDto.getLocation())
                 .build());
+
 
         //처음 스케줄을 생성한 사람의 상태는 항상 참여로
         userScheduleRepository.save(UserSchedule.builder()
@@ -80,11 +87,11 @@ public class ScheduleService {
         User currentuser = userService.findUserById(tokenService.getIdFromToken());
         Meeting currentMeeting = meetingService.findByMeetingId(meetingId);
 
-        //미팅에 참여한 유저를 가지고 온다.
-        List<UserMeeting> valid = currentuser.getMeetingList();
-        for(UserMeeting userMeeting: valid){
-            userMeeting.get
-        }
+       //미팅에 참여중인 유저가 맞는지 확인
+       if(validJoinUser(currentuser, currentMeeting)){
+           throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 참여중인 유저가 아닙니다. ");
+       }
+
 
         Schedule currentSchedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
@@ -106,6 +113,15 @@ public class ScheduleService {
         UserSchedule userSchedule = userScheduleRepository.findByScheduleIdAndUserId(scheduleId,tokenService.getIdFromToken())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
 
+        User currentuser = userService.findUserById(tokenService.getIdFromToken());
+        Meeting currentMeeting = meetingService.findByMeetingId(meetingId);
+
+        //미팅에 참여중인 유저가 맞는지 확인
+        if(validJoinUser(currentuser, currentMeeting)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 참여중인 유저가 아닙니다. ");
+        }
+
+
         if(!userSchedule.getSchedule().getMeeting().equals(meetingService.findByMeetingId(meetingId))){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 존재하는 스케줄이 아닙니다. ");
         }
@@ -119,6 +135,14 @@ public class ScheduleService {
         UserSchedule userSchedule = userScheduleRepository.findByScheduleIdAndUserId(scheduleId,tokenService.getIdFromToken())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
 
+        User currentuser = userService.findUserById(tokenService.getIdFromToken());
+        Meeting currentMeeting = meetingService.findByMeetingId(meetingId);
+
+        //미팅에 참여중인 유저가 맞는지 확인
+        if(validJoinUser(currentuser, currentMeeting)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 참여중인 유저가 아닙니다. ");
+        }
+
         //meeitng이 다르면 해당 미팅에 속한 스케줄이 아니라는 뜻이다.
         if(!userSchedule.getSchedule().getMeeting().equals(meetingService.findByMeetingId(meetingId))){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 존재하는 스케줄이 아닙니다. ");
@@ -131,6 +155,13 @@ public class ScheduleService {
     public List<ScheduleAttendDto> getAttendList(Long meetingId, Long scheduleId){
         Schedule currentSchedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
+        User currentuser = userService.findUserById(tokenService.getIdFromToken());
+        Meeting currentMeeting = meetingService.findByMeetingId(meetingId);
+
+        //미팅에 참여중인 유저가 맞는지 확인
+        if(validJoinUser(currentuser, currentMeeting)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "해당 모임에 참여중인 유저가 아닙니다. ");
+        }
 
         //meeitng이 다르면 해당 미팅에 속한 스케줄이 아니라는 뜻이다.
         if(!currentSchedule.getMeeting().equals(meetingService.findByMeetingId(meetingId))){
@@ -154,6 +185,22 @@ public class ScheduleService {
         }
 
         return scheduleAttendDtoList;
+
+    }
+
+    public boolean validJoinUser(User currentUser, Meeting currentMeeting){
+        boolean valid = true;
+
+        List<UserMeeting> userMeetings = currentMeeting.getUserList();
+        for(UserMeeting userMeeting: userMeetings){
+            if(userMeeting.getUser().equals(currentUser)){
+                valid=false;//이미 미팅에 존재하는거임
+                break;
+            }
+        }
+
+        return valid;
+
 
     }
 
