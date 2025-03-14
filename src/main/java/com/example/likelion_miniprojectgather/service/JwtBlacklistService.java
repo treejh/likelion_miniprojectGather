@@ -38,8 +38,9 @@ public class JwtBlacklistService {
 
     @Scheduled(fixedRate = 3600000)
     public void cleanExpiredTokens() {
+        //현재 시간이 만료 시간인 경우
         LocalDateTime now = LocalDateTime.now();
-        blacklistTokenRepository.deleteByExpired(now);
+        blacklistTokenRepository.deleteByExpiredBefore(now);
         System.out.println("만료된 블랙리스트 토큰 정리 완료 ");
     }
 }
