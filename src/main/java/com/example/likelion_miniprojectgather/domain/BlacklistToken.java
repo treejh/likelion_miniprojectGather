@@ -1,21 +1,24 @@
 
 package com.example.likelion_miniprojectgather.domain;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="refresh_token")
+@Table(name="blacklist_token")
 @Getter
 @Setter
-public class RefreshToken {
+@NoArgsConstructor
+@AllArgsConstructor
+public class BlacklistToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,8 +29,9 @@ public class RefreshToken {
     //true 만료, false 유효
     private LocalDateTime expired;
 
-    public RefreshToken(String value, LocalDateTime expired) {
+    public BlacklistToken(String value, LocalDateTime expired) {
         this.value = value;
         this.expired = expired;
     }
+
 }

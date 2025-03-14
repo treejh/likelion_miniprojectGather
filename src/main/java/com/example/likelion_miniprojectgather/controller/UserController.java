@@ -69,6 +69,7 @@ public class UserController {
 
     }
 
+    //refresh token이 아닌, accessToken 넣었음
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader(value = "Authorization", required = false) String authorization) {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
@@ -80,8 +81,6 @@ public class UserController {
 
         return ResponseEntity.ok("Logged out successfully");
     }
-
-
 
 
 

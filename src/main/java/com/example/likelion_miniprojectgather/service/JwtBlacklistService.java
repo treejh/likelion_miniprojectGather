@@ -1,8 +1,8 @@
 package com.example.likelion_miniprojectgather.service;
 
-import com.example.likelion_miniprojectgather.domain.RefreshToken;
+import com.example.likelion_miniprojectgather.domain.BlacklistToken;
 import com.example.likelion_miniprojectgather.jwt.token.JwtTokenizer;
-import com.example.likelion_miniprojectgather.repository.RefreshTokenRepository;
+import com.example.likelion_miniprojectgather.repository.BlacklistTokenRepository;
 import io.jsonwebtoken.Claims;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -14,18 +14,19 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class JwtBlacklistService {
-    private final RefreshTokenRepository refreshTokenRepository;
+
+    private final BlacklistTokenRepository blacklistTokenRepository;
     private final JwtTokenizer jwtTokenizer;
 
     // 블랙리스트에 토큰 추가
     public void blacklistToken(String token) {
         LocalDateTime expirationTime = getExpirationTimeFromToken(token);
-        refreshTokenRepository.save(new RefreshToken(token, expirationTime));
+        blacklistTokenRepository.save(new BlacklistToken(token, expirationTime));
     }
 
     // 블랙리스트에 포함된 토큰인지 확인
     public boolean isBlacklisted(String token) {
-        return refreshTokenRepository.findByValue(token).isPresent();
+        return blacklistTokenRepository.findByValue(token).isPresent();
     }
 
     // JWT 토큰에서 만료 시간 추출
@@ -38,7 +39,7 @@ public class JwtBlacklistService {
     @Scheduled(fixedRate = 3600000)
     public void cleanExpiredTokens() {
         LocalDateTime now = LocalDateTime.now();
-        refreshTokenRepository.deleteByExpired(now);
+        blacklistTokenRepository.deleteByExpired(now);
         System.out.println("만료된 블랙리스트 토큰 정리 완료 ");
     }
 }

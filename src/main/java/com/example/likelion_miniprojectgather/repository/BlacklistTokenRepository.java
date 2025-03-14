@@ -1,13 +1,13 @@
 package com.example.likelion_miniprojectgather.repository;
 
-import com.example.likelion_miniprojectgather.domain.RefreshToken;
+import com.example.likelion_miniprojectgather.domain.BlacklistToken;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Integer> {
+public interface BlacklistTokenRepository extends JpaRepository<BlacklistToken, Integer> {
 
-    Optional<RefreshToken> findByValue(String token);
+    Optional<BlacklistToken> findByValue(String token);
 
     // 만료된 토큰 삭제 (DB 관리 목적)
     void deleteByExpired(LocalDateTime now);

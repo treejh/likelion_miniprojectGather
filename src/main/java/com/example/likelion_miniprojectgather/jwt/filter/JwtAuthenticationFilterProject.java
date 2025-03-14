@@ -40,10 +40,11 @@ public class JwtAuthenticationFilterProject extends OncePerRequestFilter{
 
         if(StringUtils.hasText(token)){
             try{
-
-                // ✅ 블랙리스트 확인 (로그아웃된 토큰인지 체크)
-                if (jwtBlacklistService.isBlacklisted(token)) {
+                // 블랙리스트 확인 (로그아웃된 토큰인지 체크)
+                // 블랙리스트에 포함된 토큰이라면, 로그아웃한 토큰인것이다.
+                if (jwtBlacklistService.isBlacklisted(token)) { //true라면 로그아웃된 토큰
                     log.error("블랙리스트된 토큰 사용 시도: {}", token);
+                    //
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write("Token is blacklisted");
                     return;
