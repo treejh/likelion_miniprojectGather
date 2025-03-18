@@ -36,6 +36,7 @@ public class JwtBlacklistService {
         return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 
+    //1시간 마다 실행된다.
     @Scheduled(fixedRate = 3600000)
     public void cleanExpiredTokens() {
         //현재 시간이 만료 시간인 경우

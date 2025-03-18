@@ -116,11 +116,17 @@ public class MeetingService {
 
         //meeting에 참여한 유저 List 가지고오기
         List<User> joinUsers = userMeetingRepository.findUserByMeetingId(meetingId).get();
-
         //이미 참여한 유저인지 확인하는 메서드
         if(UserAlreadyJoin(currentUser,joinUsers)){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이미 모임에 참여한 유저입니다.");
         }
+
+
+        //참여할 수 있는 인원 초과
+        if(meeting.getMaxParticipants().intValue()==joinUsers.size()){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임에 참여할 수 있는 인원을 초과했습니다. 모임에 참여 할 수 없습니다. ");
+        }
+
 
         userMeetingRepository.save(UserMeeting.builder()
                 .user(currentUser)
@@ -139,8 +145,11 @@ public class MeetingService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임이 존재하지 않습니다. "));
         List<UserJoinResponseDto> userList = new ArrayList<>();
         //고민
+
         //meeting에 있는 oneToMany에 있는 getUserList를 사용하는 것이 맞는가 -> getUsersJoin
-        //아니면 userMeetingDatabase에서 데이터를 받아오는게 맞는가 -> getUsersJoin
+
+        //아니면 userMeeting Database에서 데이터를 받아오는게 맞는가 -> getUsersJoin
+
         List<UserMeeting> userMeetings = meeting.getUserList();
 
 
@@ -164,6 +173,7 @@ public class MeetingService {
     @Transactional
     public void leaveMeeting(Long meetingId){
         User currentUser = userService.findUserById(tokenService.getIdFromToken());
+
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "모임이 존재하지 않습니다. "));
 

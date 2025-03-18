@@ -53,4 +53,6 @@ public class Meeting {
 
     @OneToMany(mappedBy = "meeting",cascade = CascadeType.REMOVE,fetch = FetchType.LAZY)
     private List<Schedule> scheduleList = new ArrayList<>();
+
+
 }

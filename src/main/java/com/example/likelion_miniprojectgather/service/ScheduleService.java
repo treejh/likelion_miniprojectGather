@@ -108,6 +108,7 @@ public class ScheduleService {
                         .build()
         );
     }
+
     @Transactional
     public void deleteLeaveSchedule(Long meetingId, Long scheduleId){
         UserSchedule userSchedule = userScheduleRepository.findByScheduleIdAndUserId(scheduleId,tokenService.getIdFromToken())
@@ -155,6 +156,7 @@ public class ScheduleService {
     public List<ScheduleAttendDto> getAttendList(Long meetingId, Long scheduleId){
         Schedule currentSchedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "스케줄이 존재하지 않습니다. "));
+
         User currentuser = userService.findUserById(tokenService.getIdFromToken());
         Meeting currentMeeting = meetingService.findByMeetingId(meetingId);
 
@@ -200,10 +202,6 @@ public class ScheduleService {
         }
 
         return valid;
-
-
     }
-
-
 
 }

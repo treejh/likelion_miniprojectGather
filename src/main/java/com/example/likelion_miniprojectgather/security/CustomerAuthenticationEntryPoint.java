@@ -27,9 +27,7 @@ public class CustomerAuthenticationEntryPoint implements AuthenticationEntryPoin
         String exception  = (String) request.getAttribute("exception");
 
         if(isRestRequest(request)){
-
             handleRestResponse(request,response,exception);
-
         }else{
             //page로 요청이 들어왔을때 수행 코드
             //handlePageResponse(request,response,exception);

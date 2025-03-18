@@ -11,11 +11,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-    public class MeetingListResponseDto{
+public class MeetingListResponseDto{
+
         private Long id;
         private String name;
         private String description;
         private Long maxParticipants;
         private Long currentParticipants;
-    }
+
+}
 

@@ -68,45 +68,11 @@ public class JwtTokenizer {
 
 
 
-
     public Claims parseAccessToken(String accessToken){
         return parseToken(accessToken, accessSecret);
     }
 
-    public Claims parseRefreshToken(String refreshToken){
-        return parseToken(refreshToken,accessSecret);
-    }
 
-    public String getUserEmailFromToken(String token){
-        if(token == null || token.isBlank()){
-            throw new IllegalArgumentException("JWT 토큰이 없습니다.");
-        }
-        System.out.println("나 !!!!여기 " + token);
-
-        if(!token.startsWith("Bearer ")){
-            throw new IllegalArgumentException("유효하지 않은 형식입니다.");
-        }
-        //Bearer로 시작해서 그거 없애주려고
-        String [] tokenArr = token.split(" ");
-
-        token = tokenArr[1];
-        Claims claims = parseToken(token, accessSecret);
-
-        if(claims == null){
-            throw new IllegalArgumentException("유효하지 않은 형식입니다.");
-        }
-
-        Object email = claims.get("email");
-
-        //return Long.valueOf((Integer)claims.get("id"));
-
-        if(email instanceof String){
-            return ((String)email);
-        }else{
-            throw new IllegalArgumentException("JWT토큰에서 email를 찾을 수 없습니다.");
-        }
-
-    }
 
     public String getEmailFromToken(String token){
         if(token == null || token.isBlank()){

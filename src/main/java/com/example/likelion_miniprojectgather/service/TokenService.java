@@ -31,7 +31,6 @@ public class TokenService {
         }
 
         return jwtTokenizer.getEmailFromToken(token);
-
     }
 
     public Long getIdFromToken(){
